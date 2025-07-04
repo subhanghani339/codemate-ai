@@ -1,0 +1,11 @@
+[project]
+name = "codemate-ai"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "chainlit>=2.6.0",
+    "dotenv>=0.9.9",
+    "openai>=1.93.0",
+]
