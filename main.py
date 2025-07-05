@@ -22,7 +22,10 @@ async def on_chat_start():
         content="👋 Hello! Which language would you like me to translate into?"
     ).send()
 
-    selected_language = response.get("output", "").strip().capitalize()
+    if response and "output" in response:
+        selected_language = response.get("output", "").strip().capitalize()
+    else:
+        selected_language="None"
 
     if selected_language:
         cl.user_session.set("target_lang", selected_language)
@@ -38,6 +41,9 @@ async def on_message(message: cl.Message):
     target_lang = cl.user_session.get("target_lang", "Urdu")
     user_input = message.content
 
+    thinking_message = cl.Message(content="🤔 Thinking...")
+    await thinking_message.send()
+
     # Prepare Gemini-compatible messages
     messages: list[ChatCompletionMessageParam] = [
         {"role": "system", "content": f"You are a helpful assistant. Your ONLY task is to translate anything the user sends into {target_lang}. NEVER respond in English or do anything else."},
@@ -52,4 +58,5 @@ async def on_message(message: cl.Message):
 
     translated = response.choices[0].message.content
 
-    await cl.Message(content=f"🌐 Translation in **{target_lang}**:\n\n{translated}").send()
+    thinking_message.content = f"🌐 Translation in **{target_lang}**:\n\n{translated}"
+    await thinking_message.update()
